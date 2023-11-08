@@ -34,7 +34,7 @@ def get_token():
 @app.route ("/", methods=["GET"])
 def get_all_tasks():
         tasks = read_tasks()
-        return render_template("home.html", tasks=tasks["tasks"])
+        return render_template("index.html", tasks=tasks["tasks"])
 
 @app.route("/tasks/<int:task_id>", methods=["GET"])
 def get_task(task_id):
