@@ -16,11 +16,11 @@ jwt_token = ""
 
 def read_tasks():
     try:
-        with open(config.filename, "r") as file:
+        with open("tasks.json", "r") as file:
             tasks = json.load(file)
             return tasks
     except FileNotFoundError:
-        with open(config.filename, "w") as file:
+        with open("tasks.json", "w") as file:
             return json.dumps({"Message": "File wasn't found. Creating a new .json file"})
     except json.JSONDecodeError:
         return {"error": "Invalid json data in file"}
@@ -52,18 +52,18 @@ def list_completed_tasks():
     completed_tasks = []
 
     for task in tasks["tasks"]:
-        if task.get("status") == "complete":
+        if task.get("status") == "completed":
             completed_tasks.append(task)
 
         if not completed_tasks:
             return json.dumps("It seems no tasks are yet completed, get to it!")
     
-        return render_template("completed_tasks.html", completed_tasks=completed_tasks)
+        return render_template("home.html", completed_tasks=completed_tasks)
             
 @app.route ("/tasks", methods=["GET"])
 def get_backend_tasks():
         tasks = read_tasks()
-        return render_template("index.html", tasks=tasks["tasks"])
+        return render_template("home.html", tasks=tasks["tasks"])
 
 @app.route("/tasks", methods=["POST"], endpoint="add_task")
 def add_task():
@@ -78,20 +78,22 @@ def add_task():
                 max_id = task["id"]
         max_id = max_id + 1
 
-    
+
 
     new_task = {
         "id": max_id,
-        "description": request.form.get("description"),
         "category": request.form.get("category"),
+        "task": request.form.get("task"),
         "status": "pending"
     }
     tasks["tasks"].append(new_task)
 
-    with open(config.filename, "w") as f:
+    with open("tasks.json", "w") as f:
         json.dump(tasks, f, indent=2)
 
-    return jsonify(message="Successfuly added new task.")
+    return redirect("/")
+
+   # return jsonify(message="Successfuly added new task.")
 
     
 @app.route("/tasks/<int:task_id>", methods=["DELETE"], endpoint="delete_task")
@@ -156,7 +158,7 @@ def update_task(task_id):
         #return json.dumps({"Message": "Couldn't find a task with this ID."})
         return jsonify(status = 201, msg= "Failed")
 
-@app.route("/tasks/<int:task_id>/complete", methods=["PUT"])
+@app.route("/tasks/<int:task_id>/complete", methods=["POST"])
 def change_task_status(task_id):
     tasks = read_tasks()
     task_index = None
@@ -172,7 +174,7 @@ def change_task_status(task_id):
 
         tasks["tasks"][task_index]["status"] = new_status
 
-        with open(config.filename, "w") as file:
+        with open("tasks.json", "w") as file:
             json.dump(tasks, file, indent=2)
 
         updated_task = tasks["tasks"][task_index]

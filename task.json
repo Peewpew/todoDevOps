@@ -4,13 +4,13 @@
       "id": 1,
       "category": "Home",
       "task": "Buy groceries",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": 2,
       "category": "Home",
       "task": "Cook food for the family",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": 3,
@@ -46,7 +46,7 @@
       "id": 8,
       "category": "Fitness",
       "task": "Go for a run",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": 9,
