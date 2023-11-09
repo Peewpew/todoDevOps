@@ -1,16 +1,10 @@
 {
   "tasks": [
     {
-      "id": 1,
-      "category": "Home",
-      "task": "Buy groceries",
-      "status": "pending"
-    },
-    {
       "id": 2,
       "category": "Home",
       "task": "Cook food for the family",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 3,
@@ -46,7 +40,7 @@
       "id": 8,
       "category": "Fitness",
       "task": "Go for a run",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 9,
@@ -76,6 +70,49 @@
       "id": 13,
       "category": "Hobbies",
       "task": "Play game",
+      "status": "pending"
+    },
+    {
+      "id": 14,
+      "category": "test task",
+      "task": null,
+      "status": "pending"
+    },
+    {
+      "id": 15,
+      "category": "test11",
+      "task": null,
+      "status": "pending",
+      "description": "testing11"
+    },
+    {
+      "id": 16,
+      "category": "test task",
+      "task": null,
+      "status": "pending"
+    },
+    {
+      "id": 17,
+      "category": "test task",
+      "task": null,
+      "status": "pending"
+    },
+    {
+      "id": 18,
+      "category": "test task",
+      "task": null,
+      "status": "pending"
+    },
+    {
+      "id": 19,
+      "category": "test task",
+      "task": null,
+      "status": "pending"
+    },
+    {
+      "id": 20,
+      "description": "testing11",
+      "category": "test11",
       "status": "pending"
     }
   ]

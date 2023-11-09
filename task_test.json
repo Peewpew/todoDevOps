@@ -2,12 +2,12 @@
   "tasks": [
     {
       "id": 1,
-      "description": "detail",
-      "category": "test task",
-      "status": "pending"
+      "category": "New category",
+      "status": "completed",
+      "description": "New description"
     },
     {
-      "id": 2,
+      "id": 20,
       "description": "detail",
       "category": "test task",
       "status": "pending"

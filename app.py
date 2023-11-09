@@ -5,7 +5,6 @@ import config
 
 app = Flask(__name__)
 
-
 # #################### Config ##########################
 # security mechanisms used in web applications to protect against Cross-Site Request 
 app.secret_key = "set your JWT_SECRET_KEY"
@@ -16,11 +15,11 @@ jwt_token = ""
 
 def read_tasks():
     try:
-        with open("tasks.json", "r") as file:
+        with open(config.filename, "r") as file:
             tasks = json.load(file)
             return tasks
     except FileNotFoundError:
-        with open("tasks.json", "w") as file:
+        with open(config.filename, "w") as file:
             return json.dumps({"Message": "File wasn't found. Creating a new .json file"})
     except json.JSONDecodeError:
         return {"error": "Invalid json data in file"}
@@ -34,7 +33,7 @@ def get_token():
 @app.route ("/", methods=["GET"])
 def get_all_tasks():
         tasks = read_tasks()
-        return render_template("home.html", tasks=tasks["tasks"])
+        return render_template("index.html", tasks=tasks["tasks"])
 
 @app.route("/tasks/<int:task_id>", methods=["GET"])
 def get_task(task_id):
@@ -45,29 +44,16 @@ def get_task(task_id):
 
     else:
         return json.dumps({"Message": "Couldn't find a task with this ID."})
-
-@app.route("/tasks/completed", methods=["GET"])
-def list_completed_tasks():
-    tasks = read_tasks()
-    completed_tasks = []
-
-    for task in tasks["tasks"]:
-        if task.get("status") == "completed":
-            completed_tasks.append(task)
-
-        if not completed_tasks:
-            return json.dumps("It seems no tasks are yet completed, get to it!")
-    
-        return render_template("home.html", completed_tasks=completed_tasks)
             
 @app.route ("/tasks", methods=["GET"])
 def get_backend_tasks():
         tasks = read_tasks()
-        return render_template("home.html", tasks=tasks["tasks"])
+        return render_template("index.html", tasks=tasks["tasks"])
 
 @app.route("/tasks", methods=["POST"], endpoint="add_task")
 def add_task():
     tasks = read_tasks()
+    print(read_tasks)
     task_items = tasks["tasks"]
     max_id = 0
     if not task_items:
@@ -78,24 +64,22 @@ def add_task():
                 max_id = task["id"]
         max_id = max_id + 1
 
-
-
     new_task = {
         "id": max_id,
+        "description": request.form.get("description"),
         "category": request.form.get("category"),
-        "task": request.form.get("task"),
         "status": "pending"
     }
     tasks["tasks"].append(new_task)
 
-    with open("tasks.json", "w") as f:
+    with open(config.filename, "w") as f:
         json.dump(tasks, f, indent=2)
 
-    return redirect("/")
+    #return redirect("/")
 
-   # return jsonify(message="Successfuly added new task.")
+    return jsonify(status = 200, message="Successfuly added new task.")
 
-    
+  
 @app.route("/tasks/<int:task_id>", methods=["DELETE"], endpoint="delete_task")
 @jwt_required()
 def delete_task(task_id):
@@ -158,7 +142,7 @@ def update_task(task_id):
         #return json.dumps({"Message": "Couldn't find a task with this ID."})
         return jsonify(status = 201, msg= "Failed")
 
-@app.route("/tasks/<int:task_id>/complete", methods=["POST"])
+@app.route("/tasks/<int:task_id>/complete", methods=["PUT"])
 def change_task_status(task_id):
     tasks = read_tasks()
     task_index = None
@@ -174,12 +158,12 @@ def change_task_status(task_id):
 
         tasks["tasks"][task_index]["status"] = new_status
 
-        with open("tasks.json", "w") as file:
+        with open(config.filename, "w") as file:
             json.dump(tasks, file, indent=2)
 
         updated_task = tasks["tasks"][task_index]
         message = f"Task with ID {task_id} status has been changed to {new_status}"
-        return redirect('/')
+        return json.dumps({"Message": message})
     else:
         return json.dumps({"Message": "Couldn't find a task with this ID."})
 
@@ -193,11 +177,12 @@ def list_categories():
         if category is not None:
             categories.add(category)
 
-            categories_list = list(categories)
+    categories_list = list(categories)
 
-            return jsonify({"The current categories of tasks": categories_list})
-        else:
-            return json.dumps({"Message": "Couldn't find any categories. The list might be empty, or 'Category' for tasks listed is set to 'None/Null'"})
+    if categories_list:
+        return jsonify(status=200, msg="The current categories of tasks", categories=categories_list)
+    else:
+        return jsonify({"Message": "Couldn't find any categories. The list might be empty, or 'Category' for tasks listed is set to 'None/Null'"})
 
 @app.route("/tasks/categories/<string:category_name>", methods=["GET"])
 def list_tasks_by_category(category_name):
@@ -207,10 +192,12 @@ def list_tasks_by_category(category_name):
     for task in tasks["tasks"]:
         if task.get("category") == category_name:
             tasks_in_category.append(task)
-            message = f"All tasks in current category {category_name}"
-            return jsonify({"message": message, "tasks_in_category": tasks_in_category})
-        else:
-            return json.dumps({"Message": "Couldn't find any tasks in this category."})
+
+    if tasks_in_category:
+        message = f"All tasks in current category {category_name}"
+        return jsonify({"message": message, "tasks_in_category": tasks_in_category})
+    else:
+        return jsonify({"Message": "Couldn't find any tasks in this category."})
     
 if __name__ == '__main__':
     app.run(debug=True)
