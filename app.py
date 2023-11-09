@@ -79,6 +79,34 @@ def add_task():
 
     return jsonify(status = 200, message="Successfuly added new task.")
 
+
+#Endast för frontend/redirect. Lägger till tasks i samma fil men uppdaterar hemsidan istället för att ge "JSON reponse"
+@app.route("/tasks/frontend", methods=["POST"])
+def add_task_frontend():
+    tasks = read_tasks()
+    print(read_tasks)
+    task_items = tasks["tasks"]
+    max_id = 0
+    if not task_items:
+        max_id = 1
+    else:
+        for task in task_items:
+            if task["id"] > max_id:
+                max_id = task["id"]
+        max_id = max_id + 1
+
+    new_task = {
+        "id": max_id,
+        "description": request.form.get("description"),
+        "category": request.form.get("category"),
+        "status": "pending"
+    }
+    tasks["tasks"].append(new_task)
+
+    with open(config.filename, "w") as f:
+        json.dump(tasks, f, indent=2)
+
+    return redirect("/")
   
 @app.route("/tasks/<int:task_id>", methods=["DELETE"], endpoint="delete_task")
 @jwt_required()

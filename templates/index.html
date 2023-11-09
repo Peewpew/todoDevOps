@@ -8,9 +8,9 @@
 <body>
     <h1>To Do List</h1>
     <h2>Add New Task</h2>
-    <form action="/tasks" method="post">
+    <form action="/tasks/frontend" method="post">
         Category: <input type="text" name="category"><br>
-        Task: <input type="text" name="task"><br>
+        Description: <input type="text" name="description"><br>
         <input type="submit" value="Add Task" equiv="refresh" content="0; URL=http://127.0.0.1:5000/">
     </form>
 
@@ -20,7 +20,7 @@
             <li>
                 ID: {{ task.id }}<br>
                 Category: {{ task.category }}<br>
-                Task: {{ task.task }}<br>
+                Description: {{ task.description }}<br>
                 Status: {{ task.status }}<br>
             </li>
         {% endfor %}
