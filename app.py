@@ -52,6 +52,9 @@ def get_backend_tasks():
 
 @app.route("/tasks", methods=["POST"], endpoint="add_task")
 def add_task():
+    required_keys = ["description", "category"]
+    if not all(key in request.form for key in required_keys):
+        return jsonify(status=400, message="Bad Request. Missing required keys.")
     tasks = read_tasks()
     print(read_tasks)
     task_items = tasks["tasks"]

@@ -4,7 +4,7 @@
       "id": 1,
       "category": "Home",
       "task": "Buy groceries",
-      "status": "completed"
+      "status": "pending"
     },
     {
       "id": 2,
